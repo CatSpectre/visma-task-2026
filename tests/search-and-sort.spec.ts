@@ -1,8 +1,8 @@
 import { test, expect } from "@playwright/test";
 import { searchFor } from "./helpers";
 
-test.describe("Verkkokauppa.com – Search Nikon", () => {
-  test("Search for Nikon, sort by highest price, and verify the second product is Nikon Z30", async ({
+test.describe("Verkkokauppa.com – Search and Sort", () => {
+  test("Sorting Nikon search results by highest price shows Nikon Z30 as the second result", async ({
     page,
   }) => {
     // Step 1: Search for "Nikon"

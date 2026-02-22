@@ -35,4 +35,12 @@ export async function searchFor(page: Page, query: string): Promise<void> {
   await page.waitForURL(new RegExp(`search.*query=${urlSafeQuery}`, "i"), {
     timeout: 15_000,
   });
+
+  try {
+    await searchInput.press("Escape");
+    await page.locator("[role='listbox'], [role='combobox'][aria-expanded='true']")
+      .waitFor({ state: "hidden", timeout: 2_000 });
+  } catch {
+    // Dropdown may already be gone, safe to continue
+  }
 }
