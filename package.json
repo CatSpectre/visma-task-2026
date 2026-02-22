@@ -1,0 +1,32 @@
+{
+  "name": "visma-task-2026",
+  "version": "1.0.0",
+  "description": "Automated Playwright tests for verkkokauppa.com",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:debug": "npx playwright test --debug",
+    "report": "npx playwright show-report",
+    "analyze": "npx tsx agents/failure-analyzer.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CatSpectre/visma-task-2026.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/CatSpectre/visma-task-2026/issues"
+  },
+  "homepage": "https://github.com/CatSpectre/visma-task-2026#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^25.3.0",
+    "dotenv": "^17.3.1",
+    "openai": "^6.22.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
