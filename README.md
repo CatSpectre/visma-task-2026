@@ -8,6 +8,7 @@ Automated browser tests for [verkkokauppa.com](https://www.verkkokauppa.com) bui
 - **npm** >= 8
 
 ## Setup
+Tried on WSL
 
 ```bash
 # Install project dependencies
@@ -33,6 +34,24 @@ npm run test:debug
 # View the HTML report after a run
 npm run report
 ```
+
+### Running individual tests
+
+```bash
+# Test 1 – Nikon Search and Sort
+npx playwright test search-and-sort
+
+# Test 2 – Faceted Search and Filter Persistence
+npx playwright test faceted-search
+
+# Test 3 – Add to Cart and Checkout
+npx playwright test add-to-cart
+
+# Test 4 – Product Comparison via Category Navigation
+npx playwright test product-comparison
+```
+
+Add `--headed` to any command above to watch the browser as it runs.
 
 ## Configuration
 
@@ -71,7 +90,10 @@ The workflow installs dependencies, runs the Playwright tests, and uploads the H
 │   └── failure-analyzer.ts           # AI-powered test failure analyzer agent
 ├── tests/
 │   ├── helpers.ts                    # Shared utilities (cookie consent, search)
-│   ├── search-sort-nikon.spec.ts   # Test 1: Nikon search, sort & assert
+│   ├── search-and-sort.spec.ts       # Test 1: Nikon search, sort & assert
+│   ├── faceted-search.spec.ts        # Test 2: Faceted search & filter persistence
+│   ├── add-to-cart.spec.ts           # Test 3: Add to cart & checkout
+│   └── product-comparison.spec.ts    # Test 4: Product comparison via categories
 ├── .env.example                      # Example environment config
 ├── .gitignore
 ├── package.json
@@ -84,7 +106,7 @@ The workflow installs dependencies, runs the Playwright tests, and uploads the H
 
 ## What the tests do
 
-### Part 1: Test 1 – Nikon Search and Sort 
+### Test 1 – Nikon Search and Sort (`search-and-sort.spec.ts`)
 
 1. Opens the verkkokauppa.com website.
 2. Searches for **"Nikon"**.
@@ -92,4 +114,47 @@ The workflow installs dependencies, runs the Playwright tests, and uploads the H
 4. Selects the **second product** from the sorted list and clicks it.
 5. **Asserts** that the product title includes the text **"Nikon Z30"**.
 
-### Part 2
+### Test 2 – Faceted Search and Filter Persistence (`faceted-search.spec.ts`)
+
+**What the test does:**
+
+1. Searches for **"puhelin"** (phone).
+2. Expands the **"Brändit"** (Brand) filter in the sidebar and selects **"Apple"**.
+3. **Asserts** the URL updates to include the brand filter parameter (`filter[brand]=...`).
+4. **Asserts** that every visible product in the results contains **"Apple"** in its title.
+5. Navigates to the **first product** detail page.
+6. Clicks **Back** to return to the filtered results.
+7. **Asserts** that the brand filter is still active in the URL and the results still show only Apple products.
+
+**Why this is a good candidate for automation:**
+
+Testing filters manually is incredibly tedious and prone to human error, as it requires checking specific data attributes against a large set of  results. Automation can instantly validate that the logic behind the product grid remains sound across filter combinations.
+
+### Test 3 – Add to Cart and Checkout (`add-to-cart.spec.ts`)
+
+**What the test does:**
+
+1. Searches for **"MacBook Air"**.
+2. Opens the **first product** from the results.
+3. Clicks **"Lisää ostoskoriin"** (Add to cart).
+4. Navigates to the **shopping cart** (`/fi/cart`).
+5. Clicks **"Siirry kassalle"** (Proceed to checkout).
+6. **Asserts** that the login prompt appears with the text: **"Jatka tilaamista kirjautumalla sisään sähköpostiosoitteella ja salasanalla."**
+
+**Why this is a good candidate for automation:**
+
+The add-to-cart → checkout flow is the most critical user journey in e-commerce. A broken button or missing redirect means zero sales!
+
+### Test 4 – Product Comparison via Category Navigation (`product-comparison.spec.ts`)
+
+**What the test does:**
+
+1. Navigates from the homepage: **Tietotekniikka → Tietokoneiden komponentit → RAM-muistit**.
+2. Selects the **first two products** for comparison using their compare buttons.
+3. Clicks the **comparison link** ("Siirry tuotevertailusivulle") in the floating comparison bar.
+4. **Asserts** that the comparison view displays the heading **"Tuotevertailu"**.
+5. **Asserts** that **both selected product titles** are visible in the comparison view.
+
+**Why this is a good candidate for automation:**
+
+Product comparison is a core feature in verkkokauppa.com, especially for technical products. The test involves category navigation, UI state management (the floating comparison bar), and a dedicated comparison view. Multiple components that can break independently after deployments. Automated tests ensure the feature works end-to-end on every build.
